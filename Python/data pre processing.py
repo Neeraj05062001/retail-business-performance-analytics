@@ -1,46 +1,29 @@
-
 import pandas as pd
 
-input_file = r"Data\raw\Sample - Superstore.csv"
-output_file = r"Data\processed\Sample_Superstore_Clean.csv"
+# Load Dataset
+df = pd.read_csv("../Data/Raw/Sample - Superstore.csv")
 
-print("Reading CSV...")
+# Display basic information
+print("=" * 50)
+print("DATASET INFORMATION")
+print("=" * 50)
 
-df = pd.read_csv(
-    input_file,
-    encoding="latin1",
-    engine="python",
-    on_bad_lines="skip"
-)
+print(df.info())
 
-print(f"Rows Read: {len(df)}")
+print("\nFirst 5 Rows")
+print(df.head())
 
-# Remove unwanted characters
-df = df.replace("\xa0", " ", regex=True)
+print("\nMissing Values")
+print(df.isnull().sum())
 
-# Convert dates
-df["Order Date"] = pd.to_datetime(
-    df["Order Date"],
-    errors="coerce"
-).dt.strftime("%Y-%m-%d")
+print("\nDuplicate Rows")
+print(df.duplicated().sum())
 
-df["Ship Date"] = pd.to_datetime(
-    df["Ship Date"],
-    errors="coerce"
-).dt.strftime("%Y-%m-%d")
+# Convert Dates
+df["Order Date"] = pd.to_datetime(df["Order Date"])
+df["Ship Date"] = pd.to_datetime(df["Ship Date"])
 
-# Trim spaces
-for col in df.select_dtypes(include="object"):
-    df[col] = df[col].str.strip()
+# Save cleaned dataset
+df.to_csv("../Data/Processed/Superstore_Clean.csv", index=False)
 
-# Save clean CSV
-df.to_csv(
-    output_file,
-    index=False,
-    encoding="utf-8"
-)
-
-print("================================")
-print("✅ CLEAN CSV CREATED")
-print("================================")
-print(output_file)
+print("\n✅ Clean dataset saved successfully.")
